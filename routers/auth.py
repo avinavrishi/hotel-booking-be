@@ -1,15 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-
 from database.session import get_db
 from database.models import User, Token, UserProfile
 from utils.auth_utils import create_access_token, create_refresh_token, verify_password, hash_password
 from datetime import datetime, timedelta
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
-
 from decorator.jwt_decorator import jwt_authorization
-
 from routers.request_models.user_models import UserCreate, UserLogin
+
 
 router = APIRouter()
 
