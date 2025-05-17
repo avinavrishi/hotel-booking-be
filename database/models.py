@@ -16,9 +16,8 @@ class User(BaseTable):
     __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
     is_admin = Column(Integer, nullable=True)
     is_staff = Column(Integer, nullable=True)
 

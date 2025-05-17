@@ -2,10 +2,9 @@ from pydantic import BaseModel, EmailStr
 
 # Pydantic Models for Request Validation
 class UserCreate(BaseModel):
-    username: str
     password: str
-    email: EmailStr  # Ensuring valid email format
+    email: EmailStr
 
 class UserLogin(BaseModel):
-    username: str
+    email: EmailStr
     password: str

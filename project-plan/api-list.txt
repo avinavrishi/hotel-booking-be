@@ -2,11 +2,11 @@
 POST /auth/signup — Register a new user (traveler or property owner)
 POST /auth/login — User login (returns JWT or tokens)
 POST /auth/logout — Invalidate user token/session
-GET /users/me — Get current logged-in user profile
-PUT /users/me — Update current user info (password, email, etc.)
 
 
 2. User Profile
+GET /users/me — Get current logged-in user profile
+PUT /users/me — Update current user info (password, email, etc.)
 GET /users/{user_id}/profile — Get user profile info
 POST /users/{user_id}/profile — Create user profile (or combined with signup)
 PUT /users/{user_id}/profile — Update user profile

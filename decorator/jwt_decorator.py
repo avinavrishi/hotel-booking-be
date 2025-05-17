@@ -21,7 +21,6 @@ def jwt_authorization(authorization: str = Header(None), db: Session = Depends(g
 
         payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         user_id = payload.get("user_id")
-        username = payload.get("username")
 
         user = db.query(User).filter(User.user_id == user_id).first()
         if user is None:
@@ -32,4 +31,4 @@ def jwt_authorization(authorization: str = Header(None), db: Session = Depends(g
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    return {"user_id": user_id, "username": username, "is_admin": user.is_admin, "is_staff": user.is_staff}
+    return {"user_id": user_id, "is_admin": user.is_admin, "is_staff": user.is_staff}
