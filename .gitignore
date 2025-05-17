@@ -1,3 +1,5 @@
 dev.conf
 hotel.db
 .qodo/
+__pycache__/
+*.py[cod]
