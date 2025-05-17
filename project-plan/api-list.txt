@@ -1,0 +1,82 @@
+1. Authentication & User Management
+POST /auth/signup — Register a new user (traveler or property owner)
+POST /auth/login — User login (returns JWT or tokens)
+POST /auth/logout — Invalidate user token/session
+
+
+2. User Profile
+GET /users/me — Get current logged-in user profile
+PUT /users/me — Update current user info (password, email, etc.)
+GET /users/{user_id}/profile — Get user profile info
+POST /users/{user_id}/profile — Create user profile (or combined with signup)
+PUT /users/{user_id}/profile — Update user profile
+DELETE /users/{user_id}/profile — Delete user profile (maybe admin only)
+
+
+3. Property Management (Property Owners & Admins)
+POST /properties — Create a new property listing (owner only)
+GET /properties/{property_id} — Get details of a property
+PUT /properties/{property_id} — Update property info (owner/admin)
+DELETE /properties/{property_id} — Delete property (owner/admin)
+GET /properties — List all properties (with filters for city, price, availability, etc.)
+
+
+4. Property Images
+POST /properties/{property_id}/images — Upload images for a property
+GET /properties/{property_id}/images — List images for a property
+PUT /properties/images/{image_id} — Update image info (like setting cover image)
+DELETE /properties/images/{image_id} — Delete an image
+
+
+5. Amenities
+GET /amenities — List all available amenities
+POST /amenities — Add new amenity (admin only)
+PUT /amenities/{amenity_id} — Update amenity (admin only)
+DELETE /amenities/{amenity_id} — Delete amenity (admin only)
+POST /properties/{property_id}/amenities — Assign amenities to a property
+
+
+6. Booking System (Travelers)
+POST /bookings — Create a booking (traveler only)
+GET /bookings/{booking_id} — Get booking details
+GET /bookings — List bookings (for current user or admin)
+PUT /bookings/{booking_id} — Update booking (cancel, modify dates, etc.)
+DELETE /bookings/{booking_id} — Cancel/delete booking (if allowed)
+GET /properties/{property_id}/availability — Check property availability for dates
+
+
+7. Packages (Property Owners/Admins)
+POST /packages — Create a package for a property
+GET /packages/{package_id} — Get package details
+PUT /packages/{package_id} — Update package info
+DELETE /packages/{package_id} — Delete package
+GET /properties/{property_id}/packages — List packages for a property
+
+
+8. Reviews & Ratings (Travelers)
+POST /reviews — Submit a review for a booking/property
+GET /properties/{property_id}/reviews — List all reviews for a property
+GET /users/{user_id}/reviews — List reviews by a traveler
+PUT /reviews/{review_id} — Update a review (if allowed)
+DELETE /reviews/{review_id} — Delete a review (admin or owner of review)
+
+
+9. Payments
+POST /payments — Make a payment for a booking
+GET /payments/{payment_id} — Get payment status/details
+GET /bookings/{booking_id}/payments — List payments for a booking
+
+
+10. Admin-Only
+GET /users — List all users
+PUT /users/{user_id}/role — Change user roles (admin, staff)
+GET /reports/bookings — Get booking reports/statistics
+GET /reports/revenue — Revenue reports
+
+
+11.Future APIs to be implemented
+POST /favorites — Travelers can save favorite properties
+GET /favorites — List user's favorite properties
+POST /messages — Messaging between traveler and property owner
+GET /notifications — Notifications for booking updates, promotions
+GET /search — Advanced search API with filters, sorting, map integration

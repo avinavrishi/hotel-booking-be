@@ -7,23 +7,24 @@ from utils.auth_utils import create_access_token, create_refresh_token, verify_p
 from datetime import datetime, timedelta
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 
+from decorator.jwt_decorator import jwt_authorization
+
 from routers.request_models.user_models import UserCreate, UserLogin
 
 router = APIRouter()
 
-
 @router.post("/signup/")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     # Check if username or email already exists
-    existing_user = db.query(User).filter((User.username == user.username) | (User.email == user.email)).first()
+    existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="Username or email already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
 
     # Hash password before storing
     hashed_password = hash_password(user.password)
 
     # Create new user
-    new_user = User(username=user.username, password=hashed_password, email=user.email, is_admin = 0, is_staff = 0)
+    new_user = User(email=user.email, password=hashed_password, is_admin = 0, is_staff = 0)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -31,20 +32,20 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return {"msg": "User created successfully", "user_id": new_user.user_id}
 
 @router.post("/login/")
-async def login(user: UserLogin, db: Session = Depends(get_db)):
+async def login(request: UserLogin, db: Session = Depends(get_db)):
     try:
         # Get user with a single query
         db_user = (
             db.query(User)
-            .filter(User.username == user.username)
+            .filter(User.email == request.email)
             .first()
         )
         
         # Early return if user doesn't exist or password is wrong
-        if not db_user or not verify_password(user.password, db_user.password):
+        if not db_user or not verify_password(request.password, db_user.password):
             raise HTTPException(
                 status_code=401,
-                detail="Invalid username or password"
+                detail="Invalid email or password"
             )
 
         # Parse environment variables with error handling
@@ -64,14 +65,12 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
 
         
         token_data = {
-            "username": db_user.username,
             "user_id": db_user.user_id,
             "is_admin": db_user.is_admin if db_user.is_admin is not None else 0,
             "is_staff": db_user.is_staff if db_user.is_admin is not None else 0,
             "type": "access"  # Add token type for additional security
         }
         refresh_token_data = {
-            "username": db_user.username,
             "user_id": db_user.user_id,
             "is_admin": db_user.is_admin,
             "is_staff": db_user.is_staff,
@@ -88,7 +87,6 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             expires_delta=refresh_token_expires
         )
 
-        
 
         # Use a transaction for database operations
         try:
@@ -122,7 +120,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             )
 
         return {
-            "username": db_user.username,
+            "user_id": db_user.user_id,
             "is_admin": db_user.is_admin,
             "is_staff": db_user.is_staff,
             "access_token": access_token,
@@ -138,3 +136,25 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             status_code=500,
             detail="Internal server error during authentication"
         )
+    
+
+@router.post("/logout/")
+def logout(
+    token_data: dict = Depends(jwt_authorization),
+    db: Session = Depends(get_db)
+):
+
+    # Find the token and delete it (invalidate)
+    token = db.query(Token).filter(Token.user_id == token_data.user_id).first()
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    try:
+        # Delete all tokens for this user (optional: or just the current token)
+        db.query(Token).filter(Token.user_id == token.user_id).delete()
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error during logout")
+
+    return {"msg": "Successfully logged out"}
