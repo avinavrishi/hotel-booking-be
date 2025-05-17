@@ -37,7 +37,7 @@ class Token(Base):
     expires_at = Column(DateTime, nullable=False)
 
     # Relationships
-    user = relationship('User', back_populates='tokens')  # Added back_populates
+    profile = relationship('UserProfile', back_populates='user', uselist=False)
 
 
 class UserProfile(BaseTable):
@@ -55,7 +55,7 @@ class UserProfile(BaseTable):
     nationality = Column(String, nullable=True)
     preferred_language = Column(String, default='en')
 
-    user = relationship('User', backref='profile')
+    user = relationship('User', back_populates='profile')
 
 
 class Property(BaseTable):
