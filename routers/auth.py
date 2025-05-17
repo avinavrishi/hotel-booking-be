@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 
 from database.session import get_db
-from database.models import User, Token
+from database.models import User, Token, UserProfile
 from utils.auth_utils import create_access_token, create_refresh_token, verify_password, hash_password
 from datetime import datetime, timedelta
 from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
@@ -28,6 +28,11 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Create empty profile for the user
+    new_profile = UserProfile(user_id=new_user.user_id)
+    db.add(new_profile)
+    db.commit()
 
     return {"msg": "User created successfully", "user_id": new_user.user_id}
 
