@@ -9,10 +9,12 @@ from decorator.jwt_decorator import jwt_authorization
 from routers.request_models.user_models import UserCreate, UserLogin
 
 
+
 router = APIRouter()
 
 @router.post("/signup/")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
+
     # Check if username or email already exists
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:

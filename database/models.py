@@ -36,7 +36,7 @@ class Token(Base):
     expires_at = Column(DateTime, nullable=False)
 
     # Relationships
-    profile = relationship('UserProfile', back_populates='user', uselist=False)
+    user = relationship('User', back_populates='tokens')
 
 
 class UserProfile(BaseTable):

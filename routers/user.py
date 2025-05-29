@@ -7,11 +7,12 @@ from decorator.jwt_decorator import jwt_authorization
 
 from routers.request_models.user_models import UserUpdate, UserProfileUpdate  # Assumed schemas
 from utils.auth_utils import hash_password
+from routers.response_models.user_models import UserResponse
 
 router = APIRouter()
 
 
-@router.get("/users/me")
+@router.get("/me", response_model=UserResponse)
 def get_current_user_profile(
     token_data: dict = Depends(jwt_authorization),
     db: Session = Depends(get_db)
@@ -22,7 +23,7 @@ def get_current_user_profile(
     return user
 
 
-@router.put("/users/me")
+@router.put("/me")
 def update_current_user_info(
     updates: UserUpdate,
     token_data: dict = Depends(jwt_authorization),
@@ -42,7 +43,7 @@ def update_current_user_info(
     return {"msg": "User info updated", "user": user}
 
 
-@router.get("/users/{user_id}/profile")
+@router.get("/{user_id}/profile")
 def get_user_profile(
     user_id: int = Path(..., gt=0),
     db: Session = Depends(get_db)
@@ -53,7 +54,7 @@ def get_user_profile(
     return profile
 
 
-@router.post("/users/{user_id}/profile")
+@router.post("/{user_id}/profile")
 def create_user_profile(
     profile_data: UserProfileUpdate,
     user_id: int = Path(..., gt=0),
@@ -74,7 +75,7 @@ def create_user_profile(
     return {"msg": "Profile created", "profile": profile}
 
 
-@router.put("/users/{user_id}/profile")
+@router.put("/{user_id}/profile")
 def update_user_profile(
     profile_data: UserProfileUpdate,
     user_id: int = Path(..., gt=0),
@@ -96,7 +97,7 @@ def update_user_profile(
     return {"msg": "Profile updated", "profile": profile}
 
 
-@router.delete("/users/{user_id}/profile")
+@router.delete("/{user_id}/profile")
 def delete_user_profile(
     user_id: int = Path(..., gt=0),
     token_data: dict = Depends(jwt_authorization),
