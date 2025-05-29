@@ -16,9 +16,8 @@ class User(BaseTable):
     __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
     is_admin = Column(Integer, nullable=True)
     is_staff = Column(Integer, nullable=True)
 
@@ -37,7 +36,7 @@ class Token(Base):
     expires_at = Column(DateTime, nullable=False)
 
     # Relationships
-    user = relationship('User', back_populates='tokens')  # Added back_populates
+    user = relationship('User', back_populates='tokens')
 
 
 class UserProfile(BaseTable):
@@ -55,7 +54,7 @@ class UserProfile(BaseTable):
     nationality = Column(String, nullable=True)
     preferred_language = Column(String, default='en')
 
-    user = relationship('User', backref='profile')
+    user = relationship('User', back_populates='profile')
 
 
 class Property(BaseTable):
